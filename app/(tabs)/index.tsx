@@ -1,5 +1,7 @@
 import CardButton from "@/components/CardButton"
 import { images, offers } from "@/constants"
+import { Button } from "@react-navigation/elements"
+import * as Sentry from "@sentry/react-native"
 import cn from "clsx"
 import React from "react"
 import {
@@ -78,6 +80,15 @@ export default function Index() {
           )
         }}
         contentContainerClassName="pb-28 px-5"
+        ListFooterComponent={() => (
+          <Button
+            onPress={() => {
+              Sentry.captureException(new Error("First error"))
+            }}
+          >
+            {"Enviar error a Sentry"}
+          </Button>
+        )}
       />
     </SafeAreaView>
   )
