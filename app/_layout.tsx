@@ -1,11 +1,11 @@
 import * as Sentry from "@sentry/react-native"
-Sentry.init({
-  dsn: "https://262e8cccdde593d04a99af20eecd5f33@o4510006011887617.ingest.de.sentry.io/4510006016278608",
-});
 import { useFonts } from "expo-font"
 import { SplashScreen, Stack } from "expo-router"
 import { useEffect } from "react"
 import "./globals.css"
+Sentry.init({
+  dsn: "https://262e8cccdde593d04a99af20eecd5f33@o4510006011887617.ingest.de.sentry.io/4510006016278608",
+})
 
 export default Sentry.wrap(function RootLayout() {
   const [fontsLoaded, error] = useFonts({
