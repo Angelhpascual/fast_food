@@ -1,7 +1,11 @@
 import CardButton from "@/components/CardButton"
+import Filter from "@/components/Filter"
+import MenuCard from "@/components/MenuCard"
+import SearchBar from "@/components/SearchBar"
 import { getCategories, getMenu } from "@/lib/appwrite"
 import useAppwrite from "@/lib/useAppwrite"
 import type { Category, GetMenuParams, MenuItem } from "@/type"
+import cn from "clsx"
 import { useLocalSearchParams } from "expo-router"
 import React, { useEffect } from "react"
 import { FlatList, Text, View } from "react-native"
@@ -38,9 +42,16 @@ const Search = () => {
       <FlatList
         data={data}
         renderItem={({ item, index }) => {
+          const isFirstRightColItem = index % 2 === 0
+
           return (
-            <View className="flex-1 max-w-[48%]">
-              <Text>Menu Card </Text>
+            <View
+              className={cn(
+                "flex-1 max-w-[48%]",
+                !isFirstRightColItem ? "mt-10" : "mt-0"
+              )}
+            >
+              <MenuCard item={item as MenuItem} />
             </View>
           )
         }}
@@ -63,8 +74,8 @@ const Search = () => {
               </View>
               <CardButton />
             </View>
-            <Text>search Input</Text>
-            <Text>Filter</Text>
+            <SearchBar />
+            <Filter categories={categories!} />
           </View>
         )}
         ListEmptyComponent={() => !loading && <Text>No Results</Text>}

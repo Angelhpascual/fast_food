@@ -104,4 +104,5 @@ interface SignInParams {
 interface GetMenuParams extends Record<string, string | number> {
   category: string
   query: string
+  limit?: number
 }
