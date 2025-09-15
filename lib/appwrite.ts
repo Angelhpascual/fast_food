@@ -1,4 +1,4 @@
-import { CreateUserPrams, SignInParams } from "@/type"
+import { CreateUserParams, GetMenuParams, SignInParams } from "@/type"
 import {
   Account,
   Avatars,
@@ -6,6 +6,7 @@ import {
   Databases,
   ID,
   Query,
+  Storage,
 } from "react-native-appwrite"
 
 export const appwriteConfig = {
@@ -13,7 +14,12 @@ export const appwriteConfig = {
   platform: "com.virtulab.foodordering",
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
   databaseId: "68c295ba00230a53b02a",
+  bucketId: "68c7f41b003979e73bd6",
   userCollectionId: "68c295e9002999865181",
+  categoriesCollectionId: "68c7ea95000915127288",
+  menuCollectionId: "68c7ec9a002fbd587999",
+  customizationsCollectionId: "68c7f0a6001fe34d916f",
+  menuCustomizationCollectionId: "68c7f1aa000d095622b1",
 }
 
 export const client = new Client()
@@ -29,11 +35,13 @@ export const databases = new Databases(client)
 
 export const avatars = new Avatars(client)
 
+export const storage = new Storage(client)
+
 export const createUser = async ({
   email,
   password,
   name,
-}: CreateUserPrams) => {
+}: CreateUserParams) => {
   try {
     const newAccount = await account.create(ID.unique(), email, password, name)
     if (!newAccount) throw new Error("Account not created")
@@ -76,10 +84,42 @@ export const getCurrentUser = async () => {
     )
 
     if (!currentUser) throw Error
-
+    console.log(currentUser.documents[0], "currentUser")
     return currentUser.documents[0]
   } catch (error) {
     console.log(error)
+    throw new Error(error as string)
+  }
+}
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+  try {
+    const queries: string[] = []
+
+    if (category) queries.push(Query.equal("categories", category))
+    if (query) queries.push(Query.search("name", query))
+
+    const menu = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.menuCollectionId,
+      queries
+    )
+    if (!menu) throw new Error("No menu found")
+    return menu.documents
+  } catch (error) {
+    throw new Error(error as string)
+  }
+}
+
+export const getCategories = async () => {
+  try {
+    const categories = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.categoriesCollectionId
+    )
+    if (!categories) throw new Error("No categories found")
+    return categories.documents
+  } catch (error) {
     throw new Error(error as string)
   }
 }

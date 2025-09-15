@@ -1,11 +1,75 @@
-import React from "react"
-import { Text, View } from "react-native"
+import CardButton from "@/components/CardButton"
+import { getCategories, getMenu } from "@/lib/appwrite"
+import useAppwrite from "@/lib/useAppwrite"
+import type { Category, GetMenuParams, MenuItem } from "@/type"
+import { useLocalSearchParams } from "expo-router"
+import React, { useEffect } from "react"
+import { FlatList, Text, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 const Search = () => {
+  const { category, query } = useLocalSearchParams<{
+    category?: string
+    query?: string
+  }>()
+
+  const { data, refetch, loading } = useAppwrite<MenuItem[], GetMenuParams>({
+    fn: getMenu as unknown as (params: GetMenuParams) => Promise<MenuItem[]>,
+    params: {
+      category: category ?? "",
+      query: query ?? "",
+      limit: 6,
+    },
+  })
+  const { data: categories } = useAppwrite<Category[], Record<string, never>>({
+    fn: () => getCategories() as unknown as Promise<Category[]>,
+    params: {},
+  })
+
+  useEffect(() => {
+    refetch({
+      category: category ?? "",
+      query: query ?? "",
+      limit: 6,
+    })
+  }, [category, query])
   return (
-    <View>
-      <Text>search</Text>
-    </View>
+    <SafeAreaView>
+      <FlatList
+        data={data}
+        renderItem={({ item, index }) => {
+          return (
+            <View className="flex-1 max-w-[48%]">
+              <Text>Menu Card </Text>
+            </View>
+          )
+        }}
+        keyExtractor={(item) => item.$id}
+        numColumns={2}
+        columnWrapperClassName="gap-7 "
+        contentContainerClassName="gap-7 px-5 pb-32"
+        ListHeaderComponent={() => (
+          <View className="my-5 gap-5">
+            <View className="flex-between flex-row w-full">
+              <View className="flex-start">
+                <Text className="small-bold uppercase text-primary">
+                  Search
+                </Text>
+                <View className="flex-start flex-row gap-x-1 mt-0.5">
+                  <Text className="paragraph-semibold text-dark-100">
+                    Find your favorite food
+                  </Text>
+                </View>
+              </View>
+              <CardButton />
+            </View>
+            <Text>search Input</Text>
+            <Text>Filter</Text>
+          </View>
+        )}
+        ListEmptyComponent={() => !loading && <Text>No Results</Text>}
+      />
+    </SafeAreaView>
   )
 }
 

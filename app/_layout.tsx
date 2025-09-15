@@ -1,7 +1,9 @@
+import useAuthStore from "@/store/auth.store"
 import * as Sentry from "@sentry/react-native"
 import { useFonts } from "expo-font"
-import { SplashScreen, Stack } from "expo-router"
+import { Redirect, Slot, SplashScreen } from "expo-router"
 import { useEffect } from "react"
+import { Text, View } from "react-native"
 import "./globals.css"
 Sentry.init({
   dsn: "https://262e8cccdde593d04a99af20eecd5f33@o4510006011887617.ingest.de.sentry.io/4510006016278608",
@@ -16,10 +18,27 @@ export default Sentry.wrap(function RootLayout() {
     "QuickSand-SemiBold": require("../assets/fonts/Quicksand-SemiBold.ttf"),
   })
 
+  const { isAuthenticated, isLoading, fetchAuthenticatedUser } = useAuthStore()
+
   useEffect(() => {
     if (error) throw error
     if (fontsLoaded) SplashScreen.hideAsync()
   }, [fontsLoaded, error])
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  useEffect(() => {
+    fetchAuthenticatedUser()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/sign-in" />
+  }
+  return <Slot />
 })

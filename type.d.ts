@@ -90,7 +90,7 @@ interface ProfileFieldProps {
   icon: ImageSourcePropType
 }
 
-interface CreateUserPrams {
+export interface CreateUserParams {
   email: string
   password: string
   name: string
@@ -101,7 +101,7 @@ interface SignInParams {
   password: string
 }
 
-interface GetMenuParams {
+interface GetMenuParams extends Record<string, string | number> {
   category: string
   query: string
 }
