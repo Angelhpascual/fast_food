@@ -22,7 +22,7 @@ const SearchBar = () => {
         className="pr-5"
         onPress={() => console.log("Search Pressed")}
       >
-        JOSEPO DE LA BAHíA
+        JOSEPO DE LA BAHíA NO META LA MANO EN LA COMíA
       </TouchableOpacity>
     </View>
   )
